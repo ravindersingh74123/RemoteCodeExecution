@@ -33,6 +33,7 @@ enum SubmitStatus {
 
 export interface IProblem {
   id: string;
+  solved: number;
   title: string;
   description: string;
   slug: string;
@@ -137,43 +138,6 @@ function SubmitProblem({
     setCode(defaultCode);
   }, [problem]);
 
-  // async function pollWithBackoff(id: string, retries: number) {
-  //   if (retries === 0) {
-  //     setStatus(SubmitStatus.SUBMIT);
-  //     toast.error("Not able to get status ");
-  //     return;
-  //   }
-
-  //   const response = await axios.get(`/api/submission/?id=${id}`);
-  //   console.log(response.data)
-
-  //   const submissionn = response.data?.submission;
-
-  //   if (!submissionn || !submissionn.status) {
-  //     toast.error("Not able to get status — response invalid");
-  //     setStatus(SubmitStatus.SUBMIT);
-  //     return;
-  //   }
-
-  //   if (response.data.submission.status === "PENDING") {
-  //     setTestcases(response.data.submission.testcases);
-  //     await new Promise((resolve) => setTimeout(resolve, 2.5 * 1000));
-  //     pollWithBackoff(id, retries - 1);
-  //   } else {
-  //     if (response.data.submission.status === "AC") {
-  //       setStatus(SubmitStatus.ACCEPTED);
-  //       setTestcases(response.data.submission.testcases);
-  //       toast.success("Accepted!");
-  //       return;
-  //     } else {
-  //       setStatus(SubmitStatus.FAILED);
-  //       toast.error("Failed :(");
-  //       setTestcases(response.data.submission.testcases);
-  //       return;
-  //     }
-  //   }
-  // }
-
   async function pollWithBackoff(id: string, retries: number) {
     if (retries === 0) {
       setStatus(SubmitStatus.SUBMIT);
@@ -186,7 +150,6 @@ function SubmitProblem({
 
     console.log("Polling response", response.data);
 
-
     if (!submission || typeof submission.status_id !== "number") {
       toast.error("Not able to get status — response invalid");
       setStatus(SubmitStatus.SUBMIT);
@@ -195,7 +158,7 @@ function SubmitProblem({
 
     const statusId = submission.status_id;
     const testcases = submission.testcases || [];
-    console.log(testcases)
+    console.log(testcases);
 
     if ([1, 2].includes(statusId)) {
       // Still processing
@@ -207,15 +170,22 @@ function SubmitProblem({
       setStatus(SubmitStatus.ACCEPTED);
       setTestcases(testcases);
       toast.success("Accepted!");
+      await axios.post("/api/problem", {
+        problemId: problem.id,
+      });
     } else {
       // Any other status is failure
       setStatus(SubmitStatus.FAILED);
       setTestcases(testcases);
       toast.error("Failed :(");
+      await axios.post("/api/problem", {
+        problemId: problem.id,
+      });
     }
   }
 
   async function submit() {
+   
     setStatus(SubmitStatus.PENDING);
     setTestcases((t) => t.map((tc) => ({ ...tc, status: "PENDING" })));
     try {

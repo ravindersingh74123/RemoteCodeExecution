@@ -48,6 +48,7 @@ function ProblemCard({ problem }: { problem: any }) {
           <div>
             <p className="text-gray-500 dark:text-gray-400">Submissions</p>
             <p>{problem.solved}</p>
+            
           </div>
         </div>
       </CardContent>
