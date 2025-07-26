@@ -335,8 +335,8 @@ export async function GET(req: NextRequest) {
   // Fetch the status of each Judge0 token from testcases
   const judge0Responses = await Promise.all(
     submission.testcases
-      .filter((t) => t.token !== null) // Filter out testcases with null tokens
-      .map((t) =>
+      .filter((t: any) => t.token !== null) // Filter out testcases with null tokens
+      .map((t: any) =>
         axios.get(`${JUDGE0_URI}/submissions/${t.token}?base64_encoded=false`)
       )
   );
