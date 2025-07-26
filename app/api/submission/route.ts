@@ -151,6 +151,139 @@ export async function POST(req: NextRequest) {
 
 
 
+// export async function GET(req: NextRequest) {
+//   const session = await getServerSession(authOptions);
+//   if (!session?.user) {
+//     return NextResponse.json(
+//       {
+//         message: "You must be logged in to view submissions",
+//       },
+//       {
+//         status: 401,
+//       }
+//     );
+//   }
+
+//   const url = new URL(req.url);
+//   const searchParams = new URLSearchParams(url.search);
+//   const submissionId = searchParams.get("id");
+
+//   if (!submissionId) {
+//     return NextResponse.json(
+//       {
+//         message: "Invalid submission id",
+//       },
+//       {
+//         status: 400,
+//       }
+//     );
+//   }
+
+//   const submission = await db.submission.findUnique({
+//     where: {
+//       id: submissionId,
+//     },
+//     include: {
+//       testcases: true,
+//     },
+//   });
+
+//   if (!submission) {
+//     return NextResponse.json(
+//       {
+//         message: "Submission not found",
+//       },
+//       {
+//         status: 404,
+//       }
+//     );
+//   }
+
+//   // Fetch the status of each Judge0 token from testcases
+//   const judge0Responses = await Promise.all(
+//     submission.testcases.map((t) =>
+//       axios.get(`${JUDGE0_URI}/submissions/${t.token}?base64_encoded=false`)
+//     )
+//   );
+
+//   // Extract status IDs and calculate passed test cases
+//   const statuses = judge0Responses.map((res) => res.data.status?.id);
+//   const testcasesPassed = statuses.filter(id => id === 3).length;
+//   const totalTestcases = statuses.length;
+  
+//   // Calculate maximum time and memory usage from successful test cases
+//   let maxTime = 0;
+//   let maxMemory = 0;
+  
+//   judge0Responses.forEach(res => {
+//     if (res.data.status?.id === 3) { // Only consider successful test cases
+//       if (res.data.time && parseFloat(res.data.time) > maxTime) {
+//         maxTime = parseFloat(res.data.time);
+//       }
+//       if (res.data.memory && res.data.memory > maxMemory) {
+//         maxMemory = res.data.memory;
+//       }
+//     }
+//   });
+
+//   // Determine the overall status
+//   const finalStatus = statuses.every((id) => id === 3) // 3 = Accepted
+//     ? 3
+//     : statuses.some((id) => id <= 2) // 1 = In Queue, 2 = Processing
+//     ? 1
+//     : 6; // Assume 6 = Compilation error or runtime error
+
+//   // Map Judge0 status to your SubmissionResult enum
+//   let dbStatus = "PENDING";
+//   if (finalStatus === 3) {
+//     dbStatus = "AC";
+//   } else if (finalStatus > 3) {
+//     dbStatus = "REJECTED";
+//   }
+
+//   // Update the submission status in the database with test case counts, time, and memory
+//   const updatedSubmission = await db.submission.update({
+//     where: {
+//       id: submissionId,
+//     },
+//     data: {
+//       //@ts-ignore
+//       status: dbStatus,
+//       updatedAt: new Date(),
+//       time: maxTime > 0 ? maxTime : null,
+//       memory: maxMemory > 0 ? maxMemory : null,
+//     },
+//     include: {
+//       testcases: true,
+//     },
+//   });
+
+//   return NextResponse.json(
+//     {
+//       submission: {
+//         ...updatedSubmission,
+//         status_id: finalStatus,
+//         testcasesPassed,
+//         totalTestcases,
+//       },
+//     },
+//     {
+//       status: 200,
+//     }
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
@@ -201,9 +334,11 @@ export async function GET(req: NextRequest) {
 
   // Fetch the status of each Judge0 token from testcases
   const judge0Responses = await Promise.all(
-    submission.testcases.map((t) =>
-      axios.get(`${JUDGE0_URI}/submissions/${t.token}?base64_encoded=false`)
-    )
+    submission.testcases
+      .filter((t) => t.token !== null) // Filter out testcases with null tokens
+      .map((t) =>
+        axios.get(`${JUDGE0_URI}/submissions/${t.token}?base64_encoded=false`)
+      )
   );
 
   // Extract status IDs and calculate passed test cases
