@@ -1,12 +1,22 @@
-import { useParams } from "next/navigation";
 import { Contest } from "../../../components/Contest";
+import { type FC } from "react";
 
-export default function ContestPage({ params }: { params: { id: string } }) {
-  if (!params.id) {
-    return <div>Contest doesnt exist...</div>;
+interface ContestPageProps {
+  params: {
+    id: string;
+  };
+}
+
+const ContestPage: FC<ContestPageProps> = ({ params }) => {
+  const { id } = params;
+
+  if (!id) {
+    return <div>Contest doesn't exist...</div>;
   }
 
-  return <Contest id={params.id} />;
-}
+  return <Contest id={id} />;
+};
+
+export default ContestPage;
 
 export const dynamic = "force-dynamic";
