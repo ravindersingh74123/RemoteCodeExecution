@@ -1,22 +1,12 @@
 import { Contest } from "../../../components/Contest";
-import { type FC } from "react";
 
-interface ContestPageProps {
-  params: {
-    id: string;
-  };
-}
-
-const ContestPage: FC<ContestPageProps> = ({ params }) => {
-  const { id } = params;
-
-  if (!id) {
+export default function ContestPage({ params }: { params: { id: string } }) {
+  if (!params?.id) {
     return <div>Contest doesn't exist...</div>;
   }
 
-  return <Contest id={id} />;
-};
+  return <Contest id={params.id} />;
+}
 
-export default ContestPage;
-
+// Optional: This forces the page to be dynamic (like getServerSideProps)
 export const dynamic = "force-dynamic";
