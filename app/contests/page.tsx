@@ -1,3 +1,4 @@
+import { JSX } from "react";
 import { Contests } from "../../components/Contests";
 
 export default function Page(): JSX.Element {
