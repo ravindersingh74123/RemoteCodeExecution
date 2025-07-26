@@ -1,15 +1,18 @@
+// app/contest/[id]/problem/[problemId]/page.tsx
 import { ProblemStatement } from "../../../../../components/ProblemStatement";
 import { ProblemSubmitBar } from "../../../../../components/ProblemSubmitBar";
 import { getProblem } from "../../../../db/problem";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProblemPage({
-  params: { id, problemId },
+  params,
 }: {
-  params: {
-    id: string;
-    problemId: string;
-  };
+  params: Promise<{ id: string; problemId: string }>;
 }) {
+  // Await the params Promise and destructure both parameters
+  const { id, problemId } = await params;
+
   const problem = await getProblem(problemId, id);
 
   if (!problem) {
@@ -29,4 +32,3 @@ export default async function ProblemPage({
     </div>
   );
 }
-export const dynamic = "force-dynamic";
