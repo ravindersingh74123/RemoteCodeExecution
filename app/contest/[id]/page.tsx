@@ -3,12 +3,17 @@ import { Contest } from "../../../components/Contest";
 
 export const dynamic = "force-dynamic";
 
-export default async function ContestPage(
-  { params }: { params: { id: string } } // ← inline this, don’t alias it
-) {
-  if (!params?.id) {
+export default async function ContestPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  // Await the params Promise
+  const { id } = await params;
+
+  if (!id) {
     return <div>Contest doesn't exist...</div>;
   }
 
-  return <Contest id={params.id} />;
+  return <Contest id={id} />;
 }
