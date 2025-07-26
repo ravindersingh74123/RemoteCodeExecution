@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "prisma generate && next build",
+    "dev": "next dev",
+    "build": "prisma generate --schema=./db/prisma/schema.prisma && next build",
     "start": "next start",
-    "lint": "next lint"
-    
+    "lint": "next lint",
+    "postinstall": "prisma generate --schema=./db/prisma/schema.prisma"
   },
   "dependencies": {
     "@icons-pack/react-simple-icons": "^12.7.0",
