@@ -12,9 +12,9 @@ import { rateLimit } from "../../lib/rateLimit";
 
 const JUDGE0_URI = process.env.JUDGE0_URI || "https://judge.100xdevs.com";
 
-const SECRET_KEY = process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY!;
-const CLOUDFLARE_TURNSTILE_URL =
-  "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+// const SECRET_KEY = process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY!;
+// const CLOUDFLARE_TURNSTILE_URL =
+//   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -55,27 +55,27 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let formData = new FormData();
-  formData.append("secret", SECRET_KEY);
-  formData.append("response", submissionInput.data.token);
+  // let formData = new FormData();
+  // formData.append("secret", SECRET_KEY);
+  // formData.append("response", submissionInput.data.token);
 
-  const result = await fetch(CLOUDFLARE_TURNSTILE_URL, {
-    body: formData,
-    method: "POST",
-  });
-  const challengeResult = await result.json();
-  const challengeSucceeded = (challengeResult).success;
+  // const result = await fetch(CLOUDFLARE_TURNSTILE_URL, {
+  //   body: formData,
+  //   method: "POST",
+  // });
+  // const challengeResult = await result.json();
+  // const challengeSucceeded = (challengeResult).success;
 
-  if (!challengeSucceeded && process.env.NODE_ENV === "production") {
-    return NextResponse.json(
-      {
-        message: "Invalid reCAPTCHA token",
-      },
-      {
-        status: 403,
-      }
-    );
-  }
+  // if (!challengeSucceeded && process.env.NODE_ENV === "production") {
+  //   return NextResponse.json(
+  //     {
+  //       message: "Invalid reCAPTCHA token",
+  //     },
+  //     {
+  //       status: 403,
+  //     }
+  //   );
+  // }
 
   const dbProblem = await db.problem.findUnique({
     where: {
