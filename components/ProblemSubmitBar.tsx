@@ -18,11 +18,11 @@ import { CheckIcon, CircleX, ClockIcon } from "lucide-react";
 import { toast } from "react-toastify";
 import { signIn, useSession } from "next-auth/react";
 import { submissions as SubmissionsType } from "@prisma/client";
-import { Turnstile } from "@marsidev/react-turnstile";
+// import { Turnstile } from "@marsidev/react-turnstile";
 
-const TURNSTILE_SITE_KEY =
-  process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY ||
-  "0x4AAAAAAAc4qhUEsytXspC_";
+// const TURNSTILE_SITE_KEY =
+//   process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY ||
+//   "0x4AAAAAAAc4qhUEsytXspC_";
 
 enum SubmitStatus {
   SUBMIT = "SUBMIT",
@@ -243,14 +243,14 @@ function SubmitProblem({
         />
       </div>
       <div className="flex justify-end">
-        {process.env.NODE_ENV === "production" ? (
+        {/* {process.env.NODE_ENV === "production" ? (
           <Turnstile
             onSuccess={(token: string) => {
               setToken(token);
             }}
             siteKey={TURNSTILE_SITE_KEY}
           />
-        ) : null}
+        ) : null} */}
         <Button
           disabled={status === SubmitStatus.PENDING}
           type="submit"
